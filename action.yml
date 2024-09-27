@@ -1,4 +1,4 @@
-name: "WebPageTest GitHub Action"
+name: "WPT Action Updated"
 author: "WebPageTest"
 description: "Automatically test code changes in WebPageTest and enforce performance budgets"
 inputs:
