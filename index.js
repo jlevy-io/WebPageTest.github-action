@@ -107,9 +107,8 @@ function getOptions() {
     firstViewOnly: true,
     runs: 3,
     location: "Dulles:Chrome",
-    device: "iPhone14Pro",
-    connectivity: "LTE",
-    pollResults: 15,
+    connectivity: "4G",
+    pollResults: 5,
     timeout: 240,
     emulateMobile: true,
   };
@@ -122,11 +121,17 @@ function getOptions() {
     pollResults: parseInt(core.getInput("pollResults"), 10),
     timeout: parseInt(core.getInput("timeout"), 10),
     emulateMobile: core.getInput("emulateMobile") === "true",
+    device: core.getInput("device") || undefined
   };
 
   // Merge defaultOptions with inputOptions, preferring inputOptions
   let options = { ...defaultOptions, ...inputOptions };
 
+  // Remove the device option if it's undefined (not provided by the user)
+  if (options.device === undefined) {
+    delete options.device;
+  }
+  
   if (WPT_OPTIONS) {
     let settings = require(`${DIRECTORY}/${WPT_OPTIONS}`);
     if (typeof settings === "object" && settings !== null) {

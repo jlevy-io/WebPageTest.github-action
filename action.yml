@@ -33,6 +33,10 @@ inputs:
     description: "Connectivity profile to use"
     required: false
     default: "4G"
+  device:
+    description: "Device to emulate (e.g., iPhone14Pro, Pixel7)"
+    required: false
+    default: ""
   pollResults:
     description: "How frequently (in seconds) to poll for results"
     required: false

@@ -49,17 +49,53 @@ jobs:
 ## Configuration
 By default, WebPageTest's GitHub Action will run tests whenever the event (pull_request, push, etc) you specify in your workflow is triggered. (We recommend `pull_request`).
 
-The tests will be run with the following WebPageTest settings:
+The tests will be run with the following default WebPageTest settings:
 
 - Location: Dulles, VA
 - Browser: Chrome on an emulated Moto G4
 - Connection Type: 4G connection
-- Number of test run per URL: 3
+- Number of test runs per URL: 3
 - First view only (no repeat views tested)
 - The test results will be checked every **5** seconds, up to a limit of **240s**. If no results are returned by then, the test will timeout and fail.
 - Each test will be labeled with the label you provide via the `label` input. 
 
 However, WebPageTest is capable of going _very_ deep, and the GitHub Action provides a number of configuration settings to help fine-tune your tests and even fail a pull request if performance budgets aren't met.
+
+### Available Inputs
+
+| Input | Description | Required | Default |
+|-------|-------------|----------|---------|
+| `apiKey` | WebPageTest API Token | Yes | N/A |
+| `urls` | List of URL(s) to test | Yes | N/A |
+| `label` | Label for test (shows up in WebPageTest) | No | N/A |
+| `budget` | Path to WebPageTest testspecs.json file | No | N/A |
+| `wptOptions` | Path to JSON file with WebPageTest test options | No | N/A |
+| `firstViewOnly` | Only capture first view | No | `true` |
+| `runs` | Number of test runs | No | `3` |
+| `location` | Test location to use | No | `Dulles:Chrome` |
+| `connectivity` | Connectivity profile to use | No | `4G` |
+| `device` | Device to emulate (e.g., iPhone14Pro, Pixel7) | No | N/A |
+| `pollResults` | How frequently (in seconds) to poll for results | No | `5` |
+| `timeout` | Timeout (in seconds) for test | No | `240` |
+| `emulateMobile` | Emulate mobile device | No | `true` |
+
+You can customize these settings in your workflow file like this:
+
+```yaml
+- name: WebPageTest
+  uses: catchpoint/WebPageTest.github-action@main
+  with:
+    apiKey: ${{ secrets.WPT_API_KEY }}
+    urls: |
+      https://example.com/
+      https://example.com/about
+    label: 'GitHub Action Test'
+    runs: 5
+    location: 'ec2-us-east-1:Chrome'
+    connectivity: '3G'
+    timeout: 300
+    emulateMobile: false
+
 
 ### Setting performance budgets
 WebPageTest's GitHub Action uses the [WebPageTest API Wrapper for NodeJS](https://github.com/catchpoint/WebPageTest.api-nodejs) under the hood. The wrapper provides [test specs](https://github.com/catchpoint/WebPageTest.api-nodejs/wiki/Test-Specs) functionality that lets you set budgets on any of the metrics returned by the WebPageTest API.
