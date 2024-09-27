@@ -17,12 +17,41 @@ inputs:
   wptOptions:
     description: "Path to JSON file with WebPageTest test options (see https://github.com/marcelduran/webpagetest-api#test-works-for-runtest-method-only)"
     required: false
+  firstViewOnly:
+    description: "Only capture first view"
+    required: false
+    default: "true"
+  runs:
+    description: "Number of test runs"
+    required: false
+    default: "3"
+  location:
+    description: "Test location to use"
+    required: false
+    default: "Dulles:Chrome"
+  connectivity:
+    description: "Connectivity profile to use"
+    required: false
+    default: "4G"
+  pollResults:
+    description: "How frequently (in seconds) to poll for results"
+    required: false
+    default: "5"
+  timeout:
+    description: "Timeout (in seconds) for test"
+    required: false
+    default: "240"
+  emulateMobile:
+    description: "Emulate mobile device"
+    required: false
+    default: "true"
   GITHUB_TOKEN:
     description: "Secret GitHub Token (automatically provided by GitHub)"
     default: ${{ github.token }}
 runs:
-  using: "node12"
+  using: "node16"
   main: "index.js"
 branding:
   icon: "bar-chart-2"
   color: "blue"
+

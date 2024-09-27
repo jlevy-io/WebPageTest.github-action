@@ -2,8 +2,6 @@ const WebPageTest = require("webpagetest");
 const core = require("@actions/core");
 const github = require("@actions/github");
 const ejs = require("ejs");
-const { cornflowerblue } = require("color-name");
-const { keyword } = require("color-convert");
 
 const WPT_BUDGET = core.getInput("budget");
 const WPT_OPTIONS = core.getInput("wptOptions");
@@ -103,19 +101,32 @@ function collectData(results, runData) {
   }
   runData["tests"].push(testData);
 }
-async function run() {
-  const wpt = new WebPageTest("www.webpagetest.org", WPT_API_KEY);
 
-  //TODO: make this configurable
-  let options = {
+function getOptions() {
+  const defaultOptions = {
     firstViewOnly: true,
     runs: 3,
     location: "Dulles:Chrome",
-    connectivity: "4G",
-    pollResults: 5,
+    device: "iPhone14Pro",
+    connectivity: "LTE",
+    pollResults: 15,
     timeout: 240,
     emulateMobile: true,
   };
+
+  const inputOptions = {
+    firstViewOnly: core.getInput("firstViewOnly") === "true",
+    runs: parseInt(core.getInput("runs"), 10),
+    location: core.getInput("location"),
+    connectivity: core.getInput("connectivity"),
+    pollResults: parseInt(core.getInput("pollResults"), 10),
+    timeout: parseInt(core.getInput("timeout"), 10),
+    emulateMobile: core.getInput("emulateMobile") === "true",
+  };
+
+  // Merge defaultOptions with inputOptions, preferring inputOptions
+  let options = { ...defaultOptions, ...inputOptions };
+
   if (WPT_OPTIONS) {
     let settings = require(`${DIRECTORY}/${WPT_OPTIONS}`);
     if (typeof settings === "object" && settings !== null) {
@@ -128,12 +139,22 @@ async function run() {
       core.setFailed("The specified WebPageTest settings aren't a valid JavaScript object");
     }
   }
+
   if (WPT_BUDGET) {
     options.specs = require(`${DIRECTORY}/${WPT_BUDGET}`);
   }
+
   if (WPT_LABEL) {
     options.label = WPT_LABEL;
   }
+
+  return options;
+}
+
+async function run() {
+  const wpt = new WebPageTest("www.webpagetest.org", WPT_API_KEY);
+
+  let options = getOptions();
 
   core.startGroup("WebPageTest Configuration");
   core.info(`WebPageTest settings: ${JSON.stringify(options, null, "  ")}`);
